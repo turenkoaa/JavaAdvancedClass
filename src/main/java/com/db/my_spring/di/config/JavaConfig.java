@@ -1,4 +1,4 @@
-package com.db.my_spring.di;
+package com.db.my_spring.di.config;
 
 import com.db.my_spring.irobot.ConsoleSpeaker;
 import com.db.my_spring.irobot.Speaker;

@@ -1,5 +1,6 @@
 package com.db.my_spring.irobot;
 
+@Bean
 public class CleanerImpl implements Cleaner {
 
     @InjectRandomInt(min = 3, max = 6)
