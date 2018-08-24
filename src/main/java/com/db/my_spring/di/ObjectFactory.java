@@ -32,7 +32,7 @@ public class ObjectFactory {
     private Config configuration = new JavaConfig();
     private Reflections scanner = new Reflections("com.db.my_spring");
     private Set<ObjectConfigurator> configurators = new HashSet<>();
-    private Set<ProxyCreator> proxyCreators = new HashSet<>();
+    private Set<ProxyConfigurator> proxyConfigurators = new HashSet<>();
 
     public static ObjectFactory getInstance() {
         return ourInstance;
@@ -42,15 +42,15 @@ public class ObjectFactory {
     private ObjectFactory() {
         Set<Class<? extends ObjectConfigurator>> objectConfiguratorClasses = scanner.getSubTypesOf(ObjectConfigurator.class);
         for (Class<? extends ObjectConfigurator> clazz : objectConfiguratorClasses) {
-            if(!Modifier.isAbstract(clazz.getModifiers())){
+            if (!Modifier.isAbstract(clazz.getModifiers())) {
                 configurators.add(clazz.newInstance());
             }
         }
 
-        Set<Class<? extends ProxyCreator>> proxyCreatorClasses = scanner.getSubTypesOf(ProxyCreator.class);
-        for (Class<? extends ProxyCreator> clazz : proxyCreatorClasses) {
-            if(!Modifier.isAbstract(clazz.getModifiers())){
-                proxyCreators.add(clazz.newInstance());
+        Set<Class<? extends ProxyConfigurator>> proxyCreatorClasses = scanner.getSubTypesOf(ProxyConfigurator.class);
+        for (Class<? extends ProxyConfigurator> clazz : proxyCreatorClasses) {
+            if (!Modifier.isAbstract(clazz.getModifiers())) {
+                proxyConfigurators.add(clazz.newInstance());
             }
         }
     }
@@ -58,7 +58,7 @@ public class ObjectFactory {
     // Beans MUST have empty constructor
     // Beans MUST have init method with special annotation @PostConstruct - without parameters
     @SneakyThrows
-    public <T> T createObject(Class<T> type){
+    public <T> T createObject(Class<T> type) {
         type = resolveImpl(type);
         T t = (T) type.newInstance();
 
@@ -72,7 +72,7 @@ public class ObjectFactory {
     }
 
     private <T> Class<T> resolveImpl(Class<T> type) {
-        if (type.isInterface()){
+        if (type.isInterface()) {
             Class<?> implClass = configuration.getImplClass(type);
             if (implClass == null) {
                 Set<Class<? extends T>> classes = scanner.getSubTypesOf(type);
@@ -105,11 +105,11 @@ public class ObjectFactory {
     }
 
     private Object applyProxy(Object t) throws Exception {
-        Object tProxy = t;
-        for (ProxyCreator proxyCreator : proxyCreators) {
-            tProxy = proxyCreator.createProxy(tProxy);
+        Class<?> clazz = t.getClass();
+        for (ProxyConfigurator proxyConfigurator : proxyConfigurators) {
+            t = proxyConfigurator.wrapProxy(t, clazz);
         }
-        return tProxy;
+        return t;
     }
 
 

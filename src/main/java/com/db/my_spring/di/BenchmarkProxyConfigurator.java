@@ -8,27 +8,24 @@ import java.lang.reflect.Proxy;
 import java.util.Optional;
 import java.util.Set;
 
-public class BenchmarkProxyCreator implements ProxyCreator {
+public class BenchmarkProxyConfigurator implements ProxyConfigurator {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Object createProxy(Object t) {
-        Class<?> clazz = t.getClass();
+    public Object wrapProxy(Object t, Class<?> type) {
 
-        Set<Method> methods = ReflectionUtils.getAllMethods(clazz);
-
-        Optional<Method> first = methods.stream()
+        Optional<Method> first = ReflectionUtils.getAllMethods(type)
+                .stream()
                 .filter(m -> m.isAnnotationPresent(Benchmark.class))
                 .findFirst();
 
-        if (!clazz.isAnnotationPresent(Benchmark.class) && !first.isPresent()) {
+        if (!type.isAnnotationPresent(Benchmark.class) && !first.isPresent()) {
             return t;
         } else {
-            return Proxy.newProxyInstance(clazz.getClassLoader(), clazz.getInterfaces(),
+            return Proxy.newProxyInstance(type.getClassLoader(), type.getInterfaces(),
                     (proxy, method, args) -> {
                         Object retVal;
-                        if (clazz.isAnnotationPresent(Benchmark.class) ||
-                                clazz.getMethod(method.getName(), method.getParameterTypes()).isAnnotationPresent(Benchmark.class)) {
+                        if (type.getMethod(method.getName(), method.getParameterTypes()).isAnnotationPresent(Benchmark.class)) {
                             System.out.println("************** benchmark for method " + method.getName() + " started ***************");
                             long start = System.nanoTime();
                             retVal = method.invoke(t, args);
