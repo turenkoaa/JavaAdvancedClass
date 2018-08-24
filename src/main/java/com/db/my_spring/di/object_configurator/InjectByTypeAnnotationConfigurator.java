@@ -12,6 +12,7 @@ public class InjectByTypeAnnotationConfigurator implements ObjectConfigurator {
 
     @Override
     @SneakyThrows
+    @SuppressWarnings("unchecked")
     public void configure(Object t){
         Class<?> type = t.getClass();
         Set<Field> fields = ReflectionUtils.getAllFields(type);

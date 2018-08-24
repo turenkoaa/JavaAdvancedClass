@@ -1,7 +1,5 @@
 package com.db.my_spring.di.config;
 
-import com.db.my_spring.di.BenchmarkCleaner;
-import com.db.my_spring.irobot.Cleaner;
 import com.db.my_spring.irobot.ConsoleSpeaker;
 import com.db.my_spring.irobot.Speaker;
 import lombok.Getter;
@@ -21,7 +19,6 @@ public class JavaConfig implements Config {
 
     private void setConfig() {
         config.put(Speaker.class, ConsoleSpeaker.class);
-        config.put(Cleaner.class, BenchmarkCleaner.class);
     }
 
     @Override

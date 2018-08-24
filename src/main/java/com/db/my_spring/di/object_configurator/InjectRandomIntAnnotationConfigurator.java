@@ -8,7 +8,9 @@ import java.lang.reflect.Field;
 import java.util.Set;
 
 public class InjectRandomIntAnnotationConfigurator implements ObjectConfigurator {
+
     @Override
+    @SuppressWarnings("unchecked")
     public void configure(Object t)throws Exception{
         Class<?> type = t.getClass();
         Set<Field> fields = ReflectionUtils.getAllFields(type);

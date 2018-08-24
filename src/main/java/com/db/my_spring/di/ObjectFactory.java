@@ -32,6 +32,7 @@ public class ObjectFactory {
     private Config configuration = new JavaConfig();
     private Reflections scanner = new Reflections("com.db.my_spring");
     private Set<ObjectConfigurator> configurators = new HashSet<>();
+    private Set<ProxyCreator> proxyCreators = new HashSet<>();
 
     public static ObjectFactory getInstance() {
         return ourInstance;
@@ -45,6 +46,13 @@ public class ObjectFactory {
                 configurators.add(clazz.newInstance());
             }
         }
+
+        Set<Class<? extends ProxyCreator>> proxyCreatorClasses = scanner.getSubTypesOf(ProxyCreator.class);
+        for (Class<? extends ProxyCreator> clazz : proxyCreatorClasses) {
+            if(!Modifier.isAbstract(clazz.getModifiers())){
+                proxyCreators.add(clazz.newInstance());
+            }
+        }
     }
 
     // Beans MUST have empty constructor
@@ -53,10 +61,14 @@ public class ObjectFactory {
     public <T> T createObject(Class<T> type){
         type = resolveImpl(type);
         T t = (T) type.newInstance();
+
+        //ObjectConfigurators
         configure(t);
+        //PostConstruct init
         invokeInitMethod(t);
 
-        return t;
+        return (T) applyProxy(t);
+
     }
 
     private <T> Class<T> resolveImpl(Class<T> type) {
@@ -90,6 +102,14 @@ public class ObjectFactory {
                 method.invoke(t);
             }
         }
+    }
+
+    private Object applyProxy(Object t) throws Exception {
+        Object tProxy = t;
+        for (ProxyCreator proxyCreator : proxyCreators) {
+            tProxy = proxyCreator.createProxy(tProxy);
+        }
+        return tProxy;
     }
 
 
