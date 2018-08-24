@@ -1,4 +1,4 @@
-package com.db.my_spring.irobot;
+package com.db.my_spring.di.annotations;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

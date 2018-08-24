@@ -1,13 +1,30 @@
 package com.db.my_spring.di;
 
+import com.db.my_spring.di.annotations.PostConstruct;
 import com.db.my_spring.di.config.Config;
 import com.db.my_spring.di.config.JavaConfig;
 import com.db.my_spring.di.object_configurator.ObjectConfigurator;
 import lombok.SneakyThrows;
 import org.reflections.Reflections;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
+
+
+/*
+loading class
+methods are overrided on loading class
+
+static init parent
+static init son
+
+parent inline / parent init in order
+parent constructor
+
+son inline / parent init in order
+son constructor
+*/
 
 public class ObjectFactory {
 
@@ -30,19 +47,16 @@ public class ObjectFactory {
         }
     }
 
+    // Beans MUST have empty constructor
+    // Beans MUST have init method with special annotation @PostConstruct - without parameters
     @SneakyThrows
     public <T> T createObject(Class<T> type){
         type = resolveImpl(type);
         T t = (T) type.newInstance();
         configure(t);
+        invokeInitMethod(t);
 
         return t;
-    }
-
-    private <T> void configure(T t) throws Exception {
-        for (ObjectConfigurator configurator : configurators) {
-            configurator.configure(t);
-        }
     }
 
     private <T> Class<T> resolveImpl(Class<T> type) {
@@ -51,13 +65,31 @@ public class ObjectFactory {
             if (implClass == null) {
                 Set<Class<? extends T>> classes = scanner.getSubTypesOf(type);
                 if (classes.size() != 1) {
-                    throw new IllegalStateException(type + " has 0 or more impl.");
+                    throw new IllegalStateException(type + " has 0 or more then 1 impl, please update new config.");
                 }
                 implClass = classes.iterator().next();
             }
             type = (Class<T>) implClass;
         }
         return type;
+    }
+
+    private <T> void configure(T t) throws Exception {
+        for (ObjectConfigurator configurator : configurators) {
+            configurator.configure(t);
+        }
+    }
+
+    @SneakyThrows
+    private void invokeInitMethod(Object t) {
+        Class<?> clazz = t.getClass();
+        Method[] declaredMethods = clazz.getDeclaredMethods();
+        for (Method method : declaredMethods) {
+            if (method.isAnnotationPresent(PostConstruct.class)) {
+                method.setAccessible(true);
+                method.invoke(t);
+            }
+        }
     }
 
 

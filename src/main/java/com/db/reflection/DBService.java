@@ -1,6 +1,4 @@
-package com.db.reflection.junit;
-
-import lombok.Setter;
+package com.db.reflection;
 
 public class DBService {
 

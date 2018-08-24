@@ -1,4 +1,4 @@
-package com.db.reflection.junit;
+package com.db.reflection;
 
 import lombok.SneakyThrows;
 
