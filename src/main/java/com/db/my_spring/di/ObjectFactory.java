@@ -67,6 +67,7 @@ public class ObjectFactory {
         //PostConstruct init
         invokeInitMethod(t);
 
+        //apply proxy
         return (T) applyProxy(t);
 
     }
