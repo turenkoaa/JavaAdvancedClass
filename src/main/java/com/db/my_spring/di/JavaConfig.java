@@ -1,7 +1,5 @@
-package com.db.my_spring.factory;
+package com.db.my_spring.di;
 
-import com.db.my_spring.irobot.Cleaner;
-import com.db.my_spring.irobot.CleanerImpl;
 import com.db.my_spring.irobot.ConsoleSpeaker;
 import com.db.my_spring.irobot.Speaker;
 import lombok.Getter;

@@ -1,6 +1,6 @@
 package com.db.my_spring.irobot;
 
-import com.db.my_spring.factory.ObjectFactory;
+import com.db.my_spring.di.ObjectFactory;
 
 public class IRobot {
     private Speaker speaker = ObjectFactory.getInstance().createObject(Speaker.class);

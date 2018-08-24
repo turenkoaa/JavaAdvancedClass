@@ -1,6 +1,6 @@
 package com.db.my_spring;
 
-import com.db.my_spring.factory.ObjectFactory;
+import com.db.my_spring.di.ObjectFactory;
 import com.db.my_spring.irobot.IRobot;
 
 public class Main {
