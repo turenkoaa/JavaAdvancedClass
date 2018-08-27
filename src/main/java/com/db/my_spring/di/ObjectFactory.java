@@ -4,6 +4,7 @@ import com.db.my_spring.di.annotations.PostConstruct;
 import com.db.my_spring.di.config.Config;
 import com.db.my_spring.di.config.JavaConfig;
 import com.db.my_spring.di.object_configurator.ObjectConfigurator;
+import com.db.my_spring.di.proxy_configurator.ProxyConfigurator;
 import lombok.SneakyThrows;
 import org.reflections.Reflections;
 
@@ -66,9 +67,10 @@ public class ObjectFactory {
         configure(t);
         //PostConstruct init
         invokeInitMethod(t);
+        //apply proxy_configurator
+        t = (T) wrapWithProxyIfNeeded(t);
 
-        //apply proxy
-        return (T) applyProxy(t);
+        return t;
 
     }
 
@@ -105,10 +107,9 @@ public class ObjectFactory {
         }
     }
 
-    private Object applyProxy(Object t) throws Exception {
-        Class<?> clazz = t.getClass();
+    private Object wrapWithProxyIfNeeded(Object t) throws Exception {
         for (ProxyConfigurator proxyConfigurator : proxyConfigurators) {
-            t = proxyConfigurator.wrapProxy(t, clazz);
+            t = proxyConfigurator.wrapWithProxy(t, t.getClass());
         }
         return t;
     }

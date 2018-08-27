@@ -5,6 +5,7 @@ import com.db.my_spring.di.annotations.InjectByType;
 import com.db.my_spring.di.annotations.PostConstruct;
 
 @Bean
+@Benchmark
 public class IRobot {
 
     @InjectByType
