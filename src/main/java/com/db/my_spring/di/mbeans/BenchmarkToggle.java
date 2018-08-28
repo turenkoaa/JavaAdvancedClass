@@ -19,6 +19,6 @@ public class BenchmarkToggle implements BenchmarkToggleMBean {
 
     @Override
     public void shutDownSystem(int code) {
-        System.exit(666);
+        System.exit(code);
     }
 }

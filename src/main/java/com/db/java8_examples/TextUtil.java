@@ -35,11 +35,10 @@ public class TextUtil {
 
     public static void main(String[] args) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(TextUtil.class.getClassLoader().getResourceAsStream("text.txt")));
-        Map.Entry<String, Integer> mostFrequently = findWordsFrequency(reader)
+        findWordsFrequency(reader)
                 .entrySet()
                 .stream()
                 .max(Comparator.comparingInt(Map.Entry::getValue))
-                .orElseThrow(IllegalStateException::new);
-        System.out.println(mostFrequently.getKey() + ": " + mostFrequently.getValue());
+                .ifPresent(v -> System.out.println(v.getKey() + ": " + v.getValue()));
     }
 }

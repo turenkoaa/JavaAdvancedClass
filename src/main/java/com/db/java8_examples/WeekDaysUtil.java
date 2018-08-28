@@ -3,8 +3,8 @@ package com.db.java8_examples;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.Year;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -23,8 +23,11 @@ public class WeekDaysUtil {
     }
 
     public static void main(String[] args) {
-        Map<Integer, Long> blackFridays = findBlackFriday(1980, 1990);
-        System.out.println(blackFridays);
+        findBlackFriday(1980, 1990)
+                .entrySet()
+                .stream()
+                .sorted(Comparator.comparingLong(Map.Entry::getValue))
+                .forEach(System.out::println);
 
     }
 }
