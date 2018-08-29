@@ -2,7 +2,8 @@ package com.db.design_patterns.never_use_switch.mail_strategy;
 
 import com.db.design_patterns.never_use_switch.MailInfo;
 
-@MailCode(2)
+@MailCode(6)
+@MailCode(1)
 public class WelcomeMail implements MailTemplateCreator {
 
     public String getMailTemplate(MailInfo mailInfo){

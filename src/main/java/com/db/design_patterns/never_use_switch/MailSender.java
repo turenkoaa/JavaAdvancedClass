@@ -25,20 +25,20 @@ public class MailSender {
         Set<Class<? extends MailTemplateCreator>> classes = scanner.getSubTypesOf(MailTemplateCreator.class);
         for (Class<? extends MailTemplateCreator> clazz : classes) {
             if (!Modifier.isAbstract(clazz.getModifiers())) {
-                MailCode annotation = clazz.getAnnotation(MailCode.class);
-                if (annotation == null) {
+                MailCode[] annotations = clazz.getAnnotationsByType(MailCode.class);
+                if (annotations.length == 0) {
                     throw new IllegalStateException("No annotation specified for class");
                 }
-                mailStrategies.merge(
-                        annotation.value(),
-                        clazz.newInstance(),
-                        (v1, v2) -> {throw new IllegalStateException("Double mail code for different strategies");}
-                        );
+                for (MailCode annotation : annotations) {
+                    mailStrategies.merge(
+                            annotation.value(),
+                            clazz.newInstance(),
+                            (v1, v2) -> {throw new IllegalStateException("Double mail code for different strategies");}
+                    );
+                }
             }
         }
-
     }
-
 
     public void sendMail() {
         MailInfo mailInfo = mailDAO.getMailInfo();
@@ -46,9 +46,9 @@ public class MailSender {
         if (mailStrategies.containsKey(mailCode)) {
             MailTemplateCreator templateCreator = mailStrategies.get(mailCode);
             String mailTemplate = templateCreator.getMailTemplate(mailDAO.getMailInfo());
-            System.out.println(mailTemplate);
+            System.out.println("Mail code = " + mailCode + " " + mailTemplate);
         } else {
-            throw new IllegalStateException("Mail code is not supported");
+            throw new IllegalStateException("Mail code = " + mailCode + " is not supported");
         }
     }
 
