@@ -1,25 +1,29 @@
 package com.db.design_patterns.never_use_switch;
 
 import com.db.design_patterns.never_use_switch.dao.MailDAO;
-import com.db.design_patterns.never_use_switch.dao.MailDAOImpl;
 import com.db.design_patterns.never_use_switch.mail_strategy.MailCode;
 import com.db.design_patterns.never_use_switch.mail_strategy.MailTemplateCreator;
 import lombok.SneakyThrows;
 import org.reflections.Reflections;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
+@Component
 public class MailSender {
 
-    private MailDAO mailDAO = new MailDAOImpl();
+    @Autowired
+    private MailDAO mailDAO;
     private Map<Integer, MailTemplateCreator> mailStrategies = new HashMap<>();
 
     public MailSender() {
-        init();
     }
 
     @SneakyThrows
+    @PostConstruct
     private void init() {
         Reflections scanner = new Reflections("com.db.design_patterns.never_use_switch");
         Set<Class<? extends MailTemplateCreator>> classes = scanner.getSubTypesOf(MailTemplateCreator.class);

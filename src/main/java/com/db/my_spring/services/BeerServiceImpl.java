@@ -1,6 +1,6 @@
 package com.db.my_spring.services;
 
-import com.db.my_spring.irobot.Benchmark;
+import com.db.my_spring.di.annotations.Benchmark;
 
 public class BeerServiceImpl implements BeerService {
 

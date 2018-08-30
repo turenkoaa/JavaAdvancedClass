@@ -1,6 +1,7 @@
 package com.db.my_spring.irobot;
 
 import com.db.my_spring.di.annotations.Bean;
+import com.db.my_spring.di.annotations.Benchmark;
 import com.db.my_spring.di.annotations.InjectByType;
 import com.db.my_spring.di.annotations.PostConstruct;
 

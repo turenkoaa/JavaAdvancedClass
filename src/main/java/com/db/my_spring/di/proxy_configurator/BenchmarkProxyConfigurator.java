@@ -1,7 +1,7 @@
 package com.db.my_spring.di.proxy_configurator;
 
 import com.db.my_spring.di.mbeans.BenchmarkToggle;
-import com.db.my_spring.irobot.Benchmark;
+import com.db.my_spring.di.annotations.Benchmark;
 import lombok.SneakyThrows;
 import org.reflections.ReflectionUtils;
 import org.springframework.cglib.proxy.Enhancer;
