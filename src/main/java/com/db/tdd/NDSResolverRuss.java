@@ -1,7 +1,9 @@
 package com.db.tdd;
 
 import lombok.SneakyThrows;
+import org.springframework.stereotype.Component;
 
+@Component
 public class NDSResolverRuss implements NDSResolver {
 
     private double nds;

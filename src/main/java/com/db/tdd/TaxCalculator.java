@@ -1,11 +1,13 @@
 package com.db.tdd;
 
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
+@Component
+@RequiredArgsConstructor
 public class TaxCalculator {
 
-    @Setter
-    private NDSResolver resolver;
+    private final NDSResolver resolver;
 
     public double withNDS(double price) {
         double nds = resolver.getNDS();

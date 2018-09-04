@@ -1,54 +1,47 @@
 package com.db.design_patterns.never_use_switch;
 
 import com.db.design_patterns.never_use_switch.dao.MailDAO;
-import com.db.design_patterns.never_use_switch.mail_strategy.MailCode;
 import com.db.design_patterns.never_use_switch.mail_strategy.MailTemplateCreator;
 import lombok.SneakyThrows;
-import org.reflections.Reflections;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toMap;
 
 @Component
 public class MailSender {
 
     @Autowired
     private MailDAO mailDAO;
-    private Map<Integer, MailTemplateCreator> mailStrategies = new HashMap<>();
 
-    public MailSender() {
+    @Autowired
+    private Map<String, MailTemplateCreator> creatorsMap;
+
+    public MailSender() {}
+
+    //todo 2 codes for one creator
+    @Autowired
+    public void setCreatorsMap(Set<MailTemplateCreator> creators){
+        creatorsMap = creators.stream()
+                .collect(toMap(MailTemplateCreator::getMailCode, Function.identity(),
+                        (v1, v2) -> {
+                            throw new IllegalStateException("Double mail code for different strategies");
+                        })
+                );
     }
 
-    @SneakyThrows
-    @PostConstruct
-    private void init() {
-        Reflections scanner = new Reflections("com.db.design_patterns.never_use_switch");
-        Set<Class<? extends MailTemplateCreator>> classes = scanner.getSubTypesOf(MailTemplateCreator.class);
-        for (Class<? extends MailTemplateCreator> clazz : classes) {
-            if (!Modifier.isAbstract(clazz.getModifiers())) {
-                MailCode[] annotations = clazz.getAnnotationsByType(MailCode.class);
-                if (annotations.length == 0) {
-                    throw new IllegalStateException("No annotation specified for class");
-                }
-                for (MailCode annotation : annotations) {
-                    mailStrategies.merge(
-                            annotation.value(),
-                            clazz.newInstance(),
-                            (v1, v2) -> {throw new IllegalStateException("Double mail code for different strategies");}
-                    );
-                }
-            }
-        }
-    }
-
+    @Scheduled(cron = "*/1 * * * * *")
     public void sendMail() {
         MailInfo mailInfo = mailDAO.getMailInfo();
-        int mailCode = mailInfo.getMailCode();
-        if (mailStrategies.containsKey(mailCode)) {
-            MailTemplateCreator templateCreator = mailStrategies.get(mailCode);
+        String mailCode = String.valueOf(mailInfo.getMailCode());
+        if (creatorsMap.containsKey(mailCode)) {
+            MailTemplateCreator templateCreator = creatorsMap.get(mailCode);
             String mailTemplate = templateCreator.getMailTemplate(mailDAO.getMailInfo());
             System.out.println("Mail code = " + mailCode + " " + mailTemplate);
         } else {

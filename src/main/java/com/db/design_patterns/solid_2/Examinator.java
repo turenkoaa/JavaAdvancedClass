@@ -4,13 +4,16 @@ import com.db.heroes.factory.RandomFactory;
 import lombok.Builder;
 import lombok.Singular;
 import org.fluttercode.datafactory.impl.DataFactory;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 @Builder
 public class Examinator {
 
+    @Levels(level = Level.ШКОЛА)
     @Singular
     private List<ExerciseGenerator> generators;
     private final DataFactory dataFactory = new DataFactory();

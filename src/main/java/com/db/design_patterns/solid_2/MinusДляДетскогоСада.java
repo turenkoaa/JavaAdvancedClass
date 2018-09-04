@@ -2,6 +2,7 @@ package com.db.design_patterns.solid_2;
 
 import com.db.heroes.factory.RandomFactory;
 
+@Levels(level = Level.ДЕТ_САД)
 public class MinusДляДетскогоСада implements ExerciseGenerator {
     @Override
     public Exercise generate() {
